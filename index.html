@@ -1,0 +1,66 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenidos a mi Mundo</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: url('fondo.jpg') no-repeat center center fixed; /* Imagen de fondo */
+            color: #000;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            text-align: center;
+            color: rgb(0, 0, 0);
+            background-color: rgba(184, 212, 20, 0); /* Fondo semitransparente para mejorar legibilidad */
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        h1 {
+            font-size: 50px;
+            color: rgb(22, 1, 1);
+            text-shadow: 0 0 10px rgba(170, 241, 5, 0.945), 0 0 20px rgba(255, 255, 255, 0.7);
+            position: relative;
+            animation: glow 1.5s infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.5), 0 0 30px rgba(255, 255, 255, 0.5);
+            }
+            to {
+                text-shadow: 0 0 20px rgba(255, 255, 255, 1), 0 0 30px rgba(255, 255, 255, 1), 0 0 40px rgba(255, 255, 255, 1);
+            }
+        }
+
+        button {
+            background-color: #1e90ff;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        button:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bienvenidos a mi mundo, soy ROKYFORT</h1>
+        <button onclick="window.location.href='todosmisvideos.html'">Entrar</button>
+    </div>
+</body>
+</html>
