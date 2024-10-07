@@ -12,19 +12,23 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: #000; /* Fondo negro */
+            background: url('fondo.jpg') no-repeat center center fixed; /* Imagen de fondo */
+           color: #000;
             font-family: Arial, sans-serif;
         }
 
         .container {
             text-align: center;
-            color: white;
+            color: rgb(0, 0, 0);
+            background-color: rgba(184, 212, 20, 0); /* Fondo semitransparente para mejorar legibilidad */
+            padding: 20px;
+            border-radius: 10px;
         }
 
         h1 {
             font-size: 50px;
-            color: white;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.7), 0 0 20px rgba(255, 255, 255, 0.7);
+            color: rgb(22, 1, 1);
+            text-shadow: 0 0 10px rgba(170, 241, 5, 0.945), 0 0 20px rgba(255, 255, 255, 0.7);
             position: relative;
             animation: glow 1.5s infinite alternate;
         }
