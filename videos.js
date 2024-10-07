@@ -10,13 +10,8 @@ const videos = [
     "thumbnail": "https://img.youtube.com/vi/XDQJd-za1Sw/0.jpg"
   },
   {
-    "title": "¡EL REDDIT MÁS FUNABLE! 🤣 #11 Xokas",
-    "url": "https://www.youtube.com/watch?v=M09HDqaFZtM",
-    "thumbnail": "https://img.youtube.com/vi/M09HDqaFZtM/0.jpg"
-  },
-  {
-    "title": "El Discurso MÁS IMPORTANTE de STEVE JOBS | Documental",
-    "url": "https://www.youtube.com/watch?v=y7gFKG4vL_w",
-    "thumbnail": "https://img.youtube.com/vi/y7gFKG4vL_w/0.jpg"
+    "title": "¡¡NUEVOS SPOILERS DE SKIBIDI TOILET 77 PARTE 3!! ¿El significado del 10124 cuál es??",
+    "url": "https://www.youtube.com/watch?v=2dPr1G6x-bY",
+    "thumbnail": "https://img.youtube.com/vi/2dPr1G6x-bY/0.jpg"
   }
 ];

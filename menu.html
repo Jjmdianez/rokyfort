@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Botones Centrados</title>
+    <style>
+        /* Asegurarse que la página tenga un fondo blanco */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: white;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Contenedor para centrar los botones */
+        .container {
+            text-align: center;
+            width: 100%; /* Asegura que el contenedor ocupe el ancho completo */
+            max-width: 400px; /* Máximo ancho para que no ocupe toda la pantalla */
+        }
+
+        /* Estilos para los botones */
+        .button {
+            display: inline-block;
+            background-color: #4A90E2; /* Azul más suave */
+            color: white;
+            padding: 15px 30px;
+            margin: 10px 0; /* Margen vertical para apilar */
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 18px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%; /* Botones ocupan todo el ancho del contenedor */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+        }
+
+        /* Efecto hover para los botones */
+        .button:hover {
+            background-color: #357ABD; /* Tono más oscuro al pasar el mouse */
+        }
+
+        /* Estilo para pantallas pequeñas (móviles) */
+        @media (max-width: 600px) {
+            .button {
+                padding: 15px 20px; /* Ajustar el padding en móviles */
+                font-size: 16px; /* Ajustar el tamaño de la fuente en móviles */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="pagina1.html" class="button">ÚLTIMO VIDEO</a>
+        <a href="todosmisvideos.html" class="button">TODOS MIS VIDEOS</a>
+        <a href="pagina3.html" class="button">VIDEOS QUE ME GUSTAN</a>
+    </div>
+</body>
+</html>
