@@ -8,5 +8,10 @@ const videos = [
     "title": "¡¡ANUNCIANDO AL GANADOR DEL SORTEO DEL TITAN CLOVER MAN!! (Toilet tower defense)",
     "url": "https://www.youtube.com/watch?v=XDQJd-za1Sw",
     "thumbnail": "https://img.youtube.com/vi/XDQJd-za1Sw/0.jpg"
+  },
+  {
+    "title": "¡EL REDDIT MÁS FUNABLE! 🤣 #11 Xokas",
+    "url": "https://www.youtube.com/watch?v=M09HDqaFZtM",
+    "thumbnail": "https://img.youtube.com/vi/M09HDqaFZtM/0.jpg"
   }
 ];
