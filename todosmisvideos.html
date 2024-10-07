@@ -39,9 +39,9 @@
     }
 
     .developer-mode {
-      position: absolute;
-      top: 10px;
-      right: 10px;
+      position: fixed;
+      bottom: 20px; /* Distancia desde el fondo */
+      right: 20px; /* Distancia desde el lado derecho */
       padding: 10px 20px;
       background-color: #007bff;
       color: white;
@@ -49,10 +49,11 @@
       border-radius: 4px;
       cursor: pointer;
     }
+    
     .developer-mode2 {
-      position: absolute;
-      top: 10px;
-      left: 10px;
+      position: fixed;
+      bottom: 20px; /* Distancia desde el fondo */
+      left: 20px; /* Distancia desde el lado izquierdo */
       padding: 10px 20px;
       background-color: #007bff;
       color: white;
@@ -60,6 +61,7 @@
       border-radius: 4px;
       cursor: pointer;
     }
+
     .new-video-url {
       display: none;
       margin-top: 20px;
@@ -96,13 +98,13 @@
   </style>
 </head>
 <body>
-  <h1>TODOS MIS VIDEOS(PARA BUSCAR PULSA Ctrl+F)</h1>
-  <button class="developer-mode" onclick="toggleDeveloperMode()">Modo Desarrollador</button>
-  <button class="developer-mode2" onclick="generarNuevaPagina()">Listado nuevo</button>
+  <h1>TODOS MIS VIDEOS (PARA BUSCAR PULSA Ctrl+F)</h1>
+  
   <div class="new-video-url" id="newVideoUrl">
     <input type="text" id="videoUrlInput" placeholder="Ingresa la URL del nuevo video" onkeypress="agregarVideo(event)">
     <input type="text" id="videoTitleInput" placeholder="Ingresa el título del nuevo video" onkeypress="agregarVideo(event)">
   </div>
+  
   <div class="miniaturas-container" id="miniaturasContainer"></div>
 
   <!-- Menú contextual -->
@@ -110,6 +112,9 @@
     <div class="context-menu__item" onclick="eliminarMiniatura()">Eliminar</div>
   </div>
 
+  <button class="developer-mode2" onclick="generarNuevaPagina()">Listado nuevo</button>
+  <button class="developer-mode" onclick="toggleDeveloperMode()">Modo Desarrollador</button>
+  
   <script src="videos.js"></script>
   <script>
     let miniaturaSeleccionada = null;
@@ -160,9 +165,6 @@
           const miniaturasContainer = document.getElementById('miniaturasContainer');
           miniaturasContainer.appendChild(newMiniatura);
 
-          // Después de agregar el video, actualizar videos.js
-          //generarNuevaPagina();
-          
           document.getElementById('videoUrlInput').value = '';
           document.getElementById('videoTitleInput').value = ''; // Limpiar el campo de título
         }
@@ -190,9 +192,6 @@
         miniaturaSeleccionada.remove();
         miniaturaSeleccionada = null;
         ocultarMenuContextual();
-        
-        // Después de eliminar la miniatura, actualizar videos.js
-        generarNuevaPagina();
       }
     }
 
