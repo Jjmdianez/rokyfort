@@ -3,51 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Página Web</title>
+    <title>Bienvenidos a mi Mundo</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh; /* Cambié 125vh a 100vh para centrar verticalmente */
-            margin: 0;
+            background-color: #000; /* Fondo negro */
+            font-family: Arial, sans-serif;
         }
 
         .container {
-            display: flex;
-            flex-direction: row; /* Cambié a 'row' para que los botones estén uno al lado del otro */
-            justify-content: center; /* Centramos horizontalmente */
-            align-items: center; /* Centramos verticalmente */
-        }
-
-        .boton {
-            width: 300px;
-            height: 300px;
-            margin: 10px;
-            font-size: 35px;
-            border: 2px solid lightgray;
-            background-color: white;
-            color: darkgray;
-            border-radius: 50%;
             text-align: center;
-            text-decoration: none;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            color: white;
         }
 
-        @media screen and (max-width: 600px) {
-            .container {
-                flex-direction: column; /* Cambié a 'column' para que los botones estén uno encima del otro en dispositivos móviles */
+        h1 {
+            font-size: 50px;
+            color: white;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.7), 0 0 20px rgba(255, 255, 255, 0.7);
+            position: relative;
+            animation: glow 1.5s infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.5), 0 0 30px rgba(255, 255, 255, 0.5);
             }
+            to {
+                text-shadow: 0 0 20px rgba(255, 255, 255, 1), 0 0 30px rgba(255, 255, 255, 1), 0 0 40px rgba(255, 255, 255, 1);
+            }
+        }
+
+        button {
+            background-color: #1e90ff;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        button:hover {
+            transform: scale(1.1);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <a class="boton" href="JUGAR/">JUGAR</a>
-        <a class="boton" href="CREAR/">CREAR</a>
+        <h1>Bienvenidos a mi mundo, soy ROKYFORT</h1>
+        <button>Entrar</button>
     </div>
 </body>
 </html>
