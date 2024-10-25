@@ -1,0 +1,1 @@
+=BUSCARV(H1;[preciosgae.xls]Sheet1!$J:N;5;FALSO)
