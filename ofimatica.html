@@ -95,7 +95,8 @@
                 <th>Código</th>
                 <th>Referencia</th>
                 <th>Sup</th>
-                <th>Precio aprox</th> <!-- Nueva columna añadida -->
+                <th>Precio aprox</th>
+                <th>Stock aprox</th> <!-- Nueva columna añadida -->
             </tr>
         </thead>
         <tbody>
@@ -124,7 +125,9 @@
                 const reference = cols[7]; // Referencia
                 const price = cols[10]; // Precio
                 const priceInEffect = cols[11]; // Precio en vigor
+                const stockineffect = cols[12]; // Stock aprox
 
+                // Crear celdas y agregar contenido
                 const tdName = document.createElement('td');
                 tdName.textContent = productName.trim();
                 tr.appendChild(tdName);
@@ -135,7 +138,7 @@
 
                 const tdReference = document.createElement('td');
                 const barcodeImg = document.createElement('img');
-                barcodeImg.className = 'barcode'; // Clase para estilos
+                barcodeImg.className = 'barcode';
                 JsBarcode(barcodeImg, reference.trim(), {
                     width: 4,
                     height: 80
@@ -143,7 +146,6 @@
 
                 // Añadir evento para mostrar modal al hacer clic en el código de barras
                 barcodeImg.onclick = () => showBarcodeModal(reference.trim());
-
                 tdReference.appendChild(barcodeImg);
                 tr.appendChild(tdReference);
 
@@ -152,14 +154,19 @@
                 priceLink.href = `https://www.carrefour.es/?q=${reference.trim()}`;
                 priceLink.target = '_blank';
                 priceLink.textContent = price.trim();
-
                 tdPrice.appendChild(priceLink);
                 tr.appendChild(tdPrice);
 
                 const tdPriceInEffect = document.createElement('td');
-                tdPriceInEffect.textContent = priceInEffect.trim(); // Mostrar el precio en vigor
+                tdPriceInEffect.textContent = priceInEffect.trim();
                 tr.appendChild(tdPriceInEffect);
 
+                // Crear celda para el stock aproximado y añadirla a la fila
+                const tdStock = document.createElement('td');
+                tdStock.textContent = stockineffect.trim(); // Mostrar stock aprox
+                tr.appendChild(tdStock);
+
+                // Añadir la fila a la tabla
                 tableBody.appendChild(tr);
             });
         }
@@ -197,7 +204,8 @@
                         code: cols[6].trim(),
                         reference: cols[7].trim(),
                         price: cols[10].trim(),
-                        priceInEffect: cols[11].trim(), // Obtener precio en vigor
+                        priceInEffect: cols[11].trim(),
+                        stockineffect: cols[12].trim(), // Obtener stock en vigor
                         priceValue: parseFloat(cols[10].replace('€', '').replace(',', '.')) || null // Convertir a número
                     });
                 }
@@ -255,6 +263,10 @@
                 const tdPriceInEffect = document.createElement('td');
                 tdPriceInEffect.textContent = result.priceInEffect; // Mostrar el precio en vigor correctamente
                 tr.appendChild(tdPriceInEffect);
+
+                const tdStock = document.createElement('td');
+                tdStock.textContent = result.stockineffect; // Mostrar stock aprox
+                tr.appendChild(tdStock);
 
                 tableBody.appendChild(tr);
             });
