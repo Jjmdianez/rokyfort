@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -25,19 +24,20 @@
         tr:hover {
             background-color: #f5f5f5;
         }
-        #search {
+        #search, #deleteStockZeroButton {
             margin-bottom: 10px;
             padding: 10px;
             width: 80%;
             border: 1px solid #ddd;
         }
-        #searchButton {
+        #searchButton, #deleteStockZeroButton {
             padding: 10px 15px;
             cursor: pointer;
             background-color: #4CAF50;
             color: white;
             border: none;
             border-radius: 5px;
+            margin-left: 5px;
         }
         .barcode {
             height: 80px;
@@ -87,6 +87,7 @@
     
     <input type="text" id="search" placeholder="Palabras separadas por ,(comas)" oninput="convertToUpper()">
     <button id="searchButton" onclick="filterTable()">Buscar</button>
+    <button id="deleteStockZeroButton" onclick="filterStockZero()">Eliminar Stock 0</button>
 
     <table id="productTable">
         <thead>
@@ -96,7 +97,7 @@
                 <th>Referencia</th>
                 <th>Sup</th>
                 <th>Precio aprox</th>
-                <th>Stock aprox</th> <!-- Nueva columna añadida -->
+                <th>Stock aprox</th>
             </tr>
         </thead>
         <tbody>
@@ -112,22 +113,23 @@
     </div>
 
     <script>
+        let filteredResults = []; // Variable para almacenar resultados después de búsqueda
+
         function populateTable() {
-            const rows = data.trim().split('\n'); // Utiliza la constante data
+            const rows = data.trim().split('\n');
             const tableBody = document.getElementById('productTable').querySelector('tbody');
 
             rows.forEach(row => {
                 const cols = row.split(';');
                 const tr = document.createElement('tr');
 
-                const productName = cols[5]; // Nombre Producto
-                const code = cols[6]; // Código
-                const reference = cols[7]; // Referencia
-                const price = cols[10]; // Precio
-                const priceInEffect = cols[11]; // Precio en vigor
-                const stockineffect = cols[12]; // Stock aprox
+                const productName = cols[5];
+                const code = cols[6];
+                const reference = cols[7];
+                const price = cols[10];
+                const priceInEffect = cols[11];
+                const stockineffect = cols[12];
 
-                // Crear celdas y agregar contenido
                 const tdName = document.createElement('td');
                 tdName.textContent = productName.trim();
                 tr.appendChild(tdName);
@@ -144,7 +146,6 @@
                     height: 80
                 });
 
-                // Añadir evento para mostrar modal al hacer clic en el código de barras
                 barcodeImg.onclick = () => showBarcodeModal(reference.trim());
                 tdReference.appendChild(barcodeImg);
                 tr.appendChild(tdReference);
@@ -161,12 +162,10 @@
                 tdPriceInEffect.textContent = priceInEffect.trim();
                 tr.appendChild(tdPriceInEffect);
 
-                // Crear celda para el stock aproximado y añadirla a la fila
                 const tdStock = document.createElement('td');
-                tdStock.textContent = stockineffect.trim(); // Mostrar stock aprox
+                tdStock.textContent = stockineffect.trim();
                 tr.appendChild(tdStock);
 
-                // Añadir la fila a la tabla
                 tableBody.appendChild(tr);
             });
         }
@@ -179,23 +178,17 @@
         function filterTable() {
             const input = document.getElementById('search').value.toLowerCase();
             const tableBody = document.getElementById('productTable').querySelector('tbody');
-
-            // Limpiar el contenido anterior de la tabla
             tableBody.innerHTML = '';
 
-            const rows = data.trim().split('\n'); // Utiliza la constante data
-
-            // Separar las palabras por comas y eliminar espacios
+            const rows = data.trim().split('\n');
             const searchTerms = input.split(',').map(term => term.trim()).filter(term => term);
 
-            // Array para almacenar los resultados filtrados
-            const filteredResults = [];
+            filteredResults = [];
 
             rows.forEach(row => {
                 const cols = row.split(';');
-                const productName = cols[5].toLowerCase(); // Nombre Producto
+                const productName = cols[5].toLowerCase();
 
-                // Verificar si todas las palabras de búsqueda están presentes en el nombre del producto
                 const allTermsPresent = searchTerms.every(term => productName.includes(term));
 
                 if (allTermsPresent) {
@@ -205,27 +198,36 @@
                         reference: cols[7].trim(),
                         price: cols[10].trim(),
                         priceInEffect: cols[11].trim(),
-                        stockineffect: cols[12].trim(), // Obtener stock en vigor
-                        priceValue: parseFloat(cols[10].replace('€', '').replace(',', '.')) || null // Convertir a número
+                        stockineffect: cols[12].trim(),
+                        priceValue: parseFloat(cols[10].replace('€', '').replace(',', '.')) || null
                     });
                 }
             });
 
             // Ordenar los resultados
+            sortResults();
+            renderFilteredResults();
+        }
+
+        function sortResults() {
             filteredResults.sort((a, b) => {
                 const percentageA = a.price.endsWith('%') ? parseInt(a.price) : 0;
                 const percentageB = b.price.endsWith('%') ? parseInt(b.price) : 0;
 
                 // Primero, ordenar por porcentaje (descendente)
                 if (percentageA !== percentageB) {
-                    return percentageB - percentageA; // 5% > 3% > 2% > 1%
+                    return percentageB - percentageA;
                 } else {
-                    // Si son del mismo porcentaje, ordenar por precio (descendente)
+                    // Luego, ordenar por precio (descendente)
                     return (b.priceValue || 0) - (a.priceValue || 0);
                 }
             });
+        }
 
-            // Insertar los resultados ordenados en la tabla
+        function renderFilteredResults() {
+            const tableBody = document.getElementById('productTable').querySelector('tbody');
+            tableBody.innerHTML = '';
+
             filteredResults.forEach(result => {
                 const tr = document.createElement('tr');
 
@@ -245,9 +247,7 @@
                     height: 80
                 });
 
-                // Añadir evento para mostrar modal al hacer clic en el código de barras
                 barcodeImg.onclick = () => showBarcodeModal(result.reference);
-
                 tdReference.appendChild(barcodeImg);
                 tr.appendChild(tdReference);
 
@@ -256,20 +256,24 @@
                 priceLink.href = `https://www.carrefour.es/?q=${result.reference}`;
                 priceLink.target = '_blank';
                 priceLink.textContent = result.price;
-
                 tdPrice.appendChild(priceLink);
                 tr.appendChild(tdPrice);
 
                 const tdPriceInEffect = document.createElement('td');
-                tdPriceInEffect.textContent = result.priceInEffect; // Mostrar el precio en vigor correctamente
+                tdPriceInEffect.textContent = result.priceInEffect;
                 tr.appendChild(tdPriceInEffect);
 
                 const tdStock = document.createElement('td');
-                tdStock.textContent = result.stockineffect; // Mostrar stock aprox
+                tdStock.textContent = result.stockineffect;
                 tr.appendChild(tdStock);
 
                 tableBody.appendChild(tr);
             });
+        }
+
+        function filterStockZero() {
+            filteredResults = filteredResults.filter(result => result.stockineffect !== '0');
+            renderFilteredResults();
         }
 
         function showBarcodeModal(reference) {
@@ -287,7 +291,6 @@
             modal.style.display = 'none';
         }
 
-        // Cargar la tabla al inicio
         window.onload = populateTable;
 
     </script>
