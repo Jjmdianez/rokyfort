@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,29 +9,38 @@
             font-family: Arial, sans-serif;
             margin: 20px;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-        th, td {
+
+        th,
+        td {
             border: 1px solid #ddd;
             padding: 8px;
             text-align: left;
         }
+
         th {
             background-color: #f2f2f2;
         }
+
         tr:hover {
             background-color: #f5f5f5;
         }
-        #search, #deleteStockZeroButton {
+
+        #search,
+        #deleteStockZeroButton {
             margin-bottom: 10px;
             padding: 10px;
             width: 80%;
             border: 1px solid #ddd;
         }
-        #searchButton, #deleteStockZeroButton {
+
+        #searchButton,
+        #deleteStockZeroButton {
             padding: 10px 15px;
             cursor: pointer;
             background-color: #4CAF50;
@@ -39,14 +49,17 @@
             border-radius: 5px;
             margin-left: 5px;
         }
+
         .barcode {
             height: 80px;
             cursor: pointer;
         }
+
         a {
             text-decoration: none;
             color: inherit;
         }
+
         a:hover {
             color: #4CAF50;
         }
@@ -83,8 +96,9 @@
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
     <script src="ofimatica.js"></script>
 </head>
+
 <body>
-    
+
     <input type="text" id="search" placeholder="Palabras separadas por ,(comas)" oninput="convertToUpper()">
     <button id="searchButton" onclick="filterTable()">Buscar</button>
     <button id="deleteStockZeroButton" onclick="filterStockZero()">Eliminar Stock 0</button>
@@ -130,42 +144,68 @@
                 const ean = cols[7];
                 const stock = cols[12];
 
+                //voy a empezar a crear elementos de la tabla , el orden en que los cree importa a la hora de como se muestran
+
+                //creo la constante tdsup que creará una columna
                 const tdsup = document.createElement('td');
+                //le doy el valor a tdsup del contenido de la constante sup(columna 10 en archivo js)
                 tdsup.textContent = sup.trim();
+                //muestro en pantalla la columna tdsup
                 tr.appendChild(tdsup);
 
+                //creo la constante tdarticulo que creará una columna
                 const tdarticulo = document.createElement('td');
+                //le doy el valor a tdarticulo del contenido de la constante articulo(columna5 en archivo js)
                 tdarticulo.textContent = articulo.trim();
+                //muestro en pantalla la columna tdarticulo
                 tr.appendChild(tdarticulo);
 
+                //creo la constante tdprecio que creará una columna
+                const tdprecio = document.createElement('td');
+                //le doy el valor a tdprecio del contenido de la constante precio(columna 11 en archivo js)
+                tdprecio.textContent = precio.trim();
+                //muestro en pantalla la columna tdprecio
+                tr.appendChild(tdprecio);
+
+                //creo la constante tdsms que creará una columna
+                const tdsms = document.createElement('td');
+                //le doy el valor a tdsms del contenido de la constante sms(columna 6 del archivo js)
+                tdsms.textContent = sms.trim();
+                //muestro en pantalla la columna sms
+                tr.appendChild(tdsms);
+
+                //const tdPrice = document.createElement('td');
+                //const priceLink = document.createElement('a');
+                // priceLink.href = `https://www.carrefour.es/?q=${precio.trim()}`;
+                // priceLink.target = '_blank';
+                // priceLink.textContent = sms.trim();
+                //tdPrice.appendChild(priceLink);
+                //tr.appendChild(tdPrice);
+                //el orden en que se va añadiendo las constantes importa
+
+                //creo la constante tdean que creará una columna la de los codigos de barra
                 const tdean = document.createElement('td');
+                //creo una constante barcodeImg
                 const barcodeImg = document.createElement('img');
                 barcodeImg.className = 'barcode';
                 JsBarcode(barcodeImg, ean.trim(), {
                     width: 4,
                     height: 80
                 });
-
                 barcodeImg.onclick = () => showBarcodeModal(ean.trim());
                 tdean.appendChild(barcodeImg);
                 tr.appendChild(tdean);
 
-                const tdPrice = document.createElement('td');
-                const priceLink = document.createElement('a');
-                priceLink.href = `https://www.carrefour.es/?q=${ean.trim()}`;
-                priceLink.target = '_blank';
-                priceLink.textContent = sms.trim();
-                tdPrice.appendChild(priceLink);
-                tr.appendChild(tdPrice);
 
-                const tdPriceInEffect = document.createElement('td');
-                tdPriceInEffect.textContent = ean.trim();
-                tr.appendChild(tdPriceInEffect);
-//lo de abajo es lo que he cambiado para que me aparezca el ean donde es cojones
+
+
+                //creo la constante tdstock que creará una columna con el stock
                 const tdStock = document.createElement('td');
+                //le doy el valor a tdstock de la constante stock(columan 12 en el archivo js)
                 tdStock.textContent = stock.trim();
-                tr.appendChild(tdean);
-
+                //cargo en pantalla el valor de tdStock
+                tr.appendChild(tdStock);
+                //cierro el cuerpo de la tabla
                 tableBody.appendChild(tr);
             });
         }
@@ -295,4 +335,5 @@
 
     </script>
 </body>
+
 </html>
