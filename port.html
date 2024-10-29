@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        #search, #deleteStockZeroButton {
+            margin-bottom: 10px;
+            padding: 10px;
+            width: 80%;
+            border: 1px solid #ddd;
+        }
+        #searchButton, #deleteStockZeroButton {
+            padding: 10px 15px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-left: 5px;
+        }
+        .barcode {
+            height: 80px;
+            cursor: pointer;
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        a:hover {
+            color: #4CAF50;
+        }
+
+        /* Estilos para el modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal img {
+            height: 200px;
+        }
+
+        /* Centrado del contenido del modal */
+        .modal-content {
+            text-align: center;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+    <script src="ofimatica.js"></script>
+</head>
+<body>
+    
+    <input type="text" id="search" placeholder="Palabras separadas por ,(comas)" oninput="convertToUpper()">
+    <button id="searchButton" onclick="filterTable()">Buscar</button>
+    <button id="deleteStockZeroButton" onclick="filterStockZero()">Eliminar Stock 0</button>
+
+    <table id="productTable">
+        <thead>
+            <tr>
+                <th>Sup</th>
+                <th>Artículo</th>
+                <th>Precio aprox</th>
+                <th>SMS</th>
+                <th>EAN</th>
+                <th>Stock aprox</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Aquí se insertarán los datos -->
+        </tbody>
+    </table>
+
+    <!-- Modal para mostrar el código de barras -->
+    <div id="barcodeModal" class="modal" onclick="closeModal()">
+        <div class="modal-content">
+            <img id="modalBarcodeImage" alt="Código de barras">
+        </div>
+    </div>
+
+    <script>
+        let filteredResults = []; // Variable para almacenar resultados después de búsqueda
+
+        function populateTable() {
+            const rows = data.trim().split('\n');
+            const tableBody = document.getElementById('productTable').querySelector('tbody');
+
+            rows.forEach(row => {
+                const cols = row.split(';');
+                const tr = document.createElement('tr');
+
+                const sup = cols[10];
+                const articulo = cols[5];
+                const precio = cols[11];
+                const sms = cols[6];
+                const ean = cols[7];
+                const stock = cols[12];
+
+                const tdsup = document.createElement('td');
+                tdsup.textContent = sup.trim();
+                tr.appendChild(tdsup);
+
+                const tdarticulo = document.createElement('td');
+                tdarticulo.textContent = articulo.trim();
+                tr.appendChild(tdarticulo);
+
+                const tdean = document.createElement('td');
+                const barcodeImg = document.createElement('img');
+                barcodeImg.className = 'barcode';
+                JsBarcode(barcodeImg, ean.trim(), {
+                    width: 4,
+                    height: 80
+                });
+
+                barcodeImg.onclick = () => showBarcodeModal(ean.trim());
+                tdean.appendChild(barcodeImg);
+                tr.appendChild(tdean);
+
+                const tdPrice = document.createElement('td');
+                const priceLink = document.createElement('a');
+                priceLink.href = `https://www.carrefour.es/?q=${ean.trim()}`;
+                priceLink.target = '_blank';
+                priceLink.textContent = sms.trim();
+                tdPrice.appendChild(priceLink);
+                tr.appendChild(tdPrice);
+
+                const tdPriceInEffect = document.createElement('td');
+                tdPriceInEffect.textContent = ean.trim();
+                tr.appendChild(tdPriceInEffect);
+//lo de abajo es lo que he cambiado para que me aparezca el ean donde es cojones
+                const tdStock = document.createElement('td');
+                tdStock.textContent = stock.trim();
+                tr.appendChild(tdean);
+
+                tableBody.appendChild(tr);
+            });
+        }
+
+        function convertToUpper() {
+            const input = document.getElementById('search');
+            input.value = input.value.toUpperCase();
+        }
+
+        function filterTable() {
+            const input = document.getElementById('search').value.toLowerCase();
+            const tableBody = document.getElementById('productTable').querySelector('tbody');
+            tableBody.innerHTML = '';
+
+            const rows = data.trim().split('\n');
+            const searchTerms = input.split(',').map(term => term.trim()).filter(term => term);
+
+            filteredResults = [];
+
+            rows.forEach(row => {
+                const cols = row.split(';');
+                const productName = cols[5].toLowerCase();
+
+                const allTermsPresent = searchTerms.every(term => productName.includes(term));
+
+                if (allTermsPresent) {
+                    filteredResults.push({
+                        name: cols[10].trim(),
+                        code: cols[5].trim(),
+                        reference: cols[11].trim(),
+                        price: cols[6].trim(),
+                        priceInEffect: cols[7].trim(),
+                        stockineffect: cols[12].trim(),
+                        priceValue: parseFloat(cols[10].replace('€', '').replace(',', '.')) || null
+                    });
+                }
+            });
+
+            // Ordenar los resultados
+            sortResults();
+            renderFilteredResults();
+        }
+
+        function sortResults() {
+            filteredResults.sort((a, b) => {
+                const percentageA = a.price.endsWith('%') ? parseInt(a.price) : 0;
+                const percentageB = b.price.endsWith('%') ? parseInt(b.price) : 0;
+
+                // Primero, ordenar por porcentaje (descendente)
+                if (percentageA !== percentageB) {
+                    return percentageB - percentageA;
+                } else {
+                    // Luego, ordenar por precio (descendente)
+                    return (b.priceValue || 0) - (a.priceValue || 0);
+                }
+            });
+        }
+
+        function renderFilteredResults() {
+            const tableBody = document.getElementById('productTable').querySelector('tbody');
+            tableBody.innerHTML = '';
+
+            filteredResults.forEach(result => {
+                const tr = document.createElement('tr');
+
+                const tdName = document.createElement('td');
+                tdName.textContent = result.name;
+                tr.appendChild(tdName);
+
+                const tdCode = document.createElement('td');
+                tdCode.textContent = result.code;
+                tr.appendChild(tdCode);
+
+                const tdReference = document.createElement('td');
+                const barcodeImg = document.createElement('img');
+                barcodeImg.className = 'barcode';
+                JsBarcode(barcodeImg, result.reference, {
+                    width: 4,
+                    height: 80
+                });
+
+                barcodeImg.onclick = () => showBarcodeModal(result.reference);
+                tdReference.appendChild(barcodeImg);
+                tr.appendChild(tdReference);
+
+                const tdPrice = document.createElement('td');
+                const priceLink = document.createElement('a');
+                priceLink.href = `https://www.carrefour.es/?q=${result.reference}`;
+                priceLink.target = '_blank';
+                priceLink.textContent = result.price;
+                tdPrice.appendChild(priceLink);
+                tr.appendChild(tdPrice);
+
+                const tdPriceInEffect = document.createElement('td');
+                tdPriceInEffect.textContent = result.priceInEffect;
+                tr.appendChild(tdPriceInEffect);
+
+                const tdStock = document.createElement('td');
+                tdStock.textContent = result.stockineffect;
+                tr.appendChild(tdStock);
+
+                tableBody.appendChild(tr);
+            });
+        }
+
+        function filterStockZero() {
+            filteredResults = filteredResults.filter(result => result.stockineffect !== '0');
+            renderFilteredResults();
+        }
+
+        function showBarcodeModal(reference) {
+            const modal = document.getElementById('barcodeModal');
+            const modalBarcodeImage = document.getElementById('modalBarcodeImage');
+            JsBarcode(modalBarcodeImage, reference, {
+                width: 4,
+                height: 200
+            });
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('barcodeModal');
+            modal.style.display = 'none';
+        }
+
+        window.onload = populateTable;
+
+    </script>
+</body>
+</html>
