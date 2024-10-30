@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,29 +9,40 @@
             font-family: Arial, sans-serif;
             margin: 20px;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-        th, td {
+
+        th,
+        td {
             border: 1px solid #ddd;
             padding: 8px;
             text-align: left;
         }
+
         th {
             background-color: #f2f2f2;
         }
+
         tr:hover {
             background-color: #f5f5f5;
         }
-        #search, #deleteStockZeroButton {
+
+        #search,
+        #deleteStockZeroButton,
+        #searchAgainButton {
             margin-bottom: 10px;
             padding: 10px;
             width: 80%;
             border: 1px solid #ddd;
         }
-        #searchButton, #deleteStockZeroButton {
+
+        #searchButton,
+        #deleteStockZeroButton,
+        #searchAgainButton {
             padding: 10px 15px;
             cursor: pointer;
             background-color: #4CAF50;
@@ -39,14 +51,17 @@
             border-radius: 5px;
             margin-left: 5px;
         }
+
         .barcode {
             height: 80px;
             cursor: pointer;
         }
+
         a {
             text-decoration: none;
             color: inherit;
         }
+
         a:hover {
             color: #4CAF50;
         }
@@ -83,20 +98,22 @@
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
     <script src="ofimatica.js"></script>
 </head>
+
 <body>
-    
-    <input type="text" id="search" placeholder="Palabras separadas por ,(comas)" oninput="convertToUpper()">
-    <button id="searchButton" onclick="filterTable()">Buscar</button>
-    <button id="deleteStockZeroButton" onclick="filterStockZero()">Eliminar Stock 0</button>
+
+    <input type="text" id="search" placeholder="Palabras separadas por ,(comas)" oninput="ponerMayusculas()">
+    <button id="searchButton" onclick="filtrarTabla()">Buscar</button>
+    <button id="deleteStockZeroButton" onclick="eliminarStock0()" style="display: none;">Eliminar Stock 0</button>
+    <button id="searchAgainButton" onclick="buscarDeNuevo()" style="display: none;">Buscar de nuevo</button>
 
     <table id="productTable">
         <thead>
             <tr>
-                <th>Nombre Producto</th>
-                <th>Código</th>
-                <th>Referencia</th>
                 <th>Sup</th>
+                <th>Nombre del producto</th>
                 <th>Precio aprox</th>
+                <th>SMS</th>
+                <th>EAN</th>
                 <th>Stock aprox</th>
             </tr>
         </thead>
@@ -106,177 +123,188 @@
     </table>
 
     <!-- Modal para mostrar el código de barras -->
-    <div id="barcodeModal" class="modal" onclick="closeModal()">
+    <div id="barcodeModal" class="modal" onclick="cerrarModal()">
         <div class="modal-content">
             <img id="modalBarcodeImage" alt="Código de barras">
         </div>
     </div>
 
     <script>
-        let filteredResults = []; // Variable para almacenar resultados después de búsqueda
+        let resultadosFiltrados = []; // Variable para almacenar resultados después de búsqueda
 
         function populateTable() {
-            const rows = data.trim().split('\n');
-            const tableBody = document.getElementById('productTable').querySelector('tbody');
+            const fila = data.trim().split('\n');
+            const CuerpoTabla = document.getElementById('productTable').querySelector('tbody');
 
-            rows.forEach(row => {
-                const cols = row.split(';');
-                const tr = document.createElement('tr');
+            fila.forEach(row => {
+                const columnas = row.split(';');
+                const filas = document.createElement('tr');
 
-                const productName = cols[5];
-                const code = cols[6];
-                const reference = cols[7];
-                const price = cols[10];
-                const priceInEffect = cols[11];
-                const stockineffect = cols[12];
+                const nombreProducto = columnas[5];
+                const sms = columnas[6];
+                const ean = columnas[7];
+                const sup = columnas[10];
+                const precioAprox = columnas[11];
+                const stockAprox = columnas[12];
 
-                const tdName = document.createElement('td');
-                tdName.textContent = productName.trim();
-                tr.appendChild(tdName);
+                const supColumna = document.createElement('td');
+                const linkProducto = document.createElement('a');
+                linkProducto.href = `https://www.carrefour.es/?q=${ean.trim()}`;
+                linkProducto.target = '_blank';
+                linkProducto.textContent = sup.trim();
+                supColumna.appendChild(linkProducto);
+                filas.appendChild(supColumna);
 
-                const tdCode = document.createElement('td');
-                tdCode.textContent = code.trim();
-                tr.appendChild(tdCode);
+                const nombreProductoColumna = document.createElement('td');
+                nombreProductoColumna.textContent = nombreProducto.trim();
+                filas.appendChild(nombreProductoColumna);
 
-                const tdReference = document.createElement('td');
-                const barcodeImg = document.createElement('img');
-                barcodeImg.className = 'barcode';
-                JsBarcode(barcodeImg, reference.trim(), {
+                const precioAproxColumna = document.createElement('td');
+                precioAproxColumna.textContent = precioAprox.trim();
+                filas.appendChild(precioAproxColumna);
+
+                const smsColumna = document.createElement('td');
+                smsColumna.textContent = sms.trim();
+                filas.appendChild(smsColumna);
+
+                const eanColumna = document.createElement('td');
+                const imagenCodigoBarras = document.createElement('img');
+                imagenCodigoBarras.className = 'barcode';
+                JsBarcode(imagenCodigoBarras, ean.trim(), {
                     width: 4,
                     height: 80
                 });
 
-                barcodeImg.onclick = () => showBarcodeModal(reference.trim());
-                tdReference.appendChild(barcodeImg);
-                tr.appendChild(tdReference);
+                imagenCodigoBarras.onclick = () => mostrarCodigoBarras(ean.trim());
+                eanColumna.appendChild(imagenCodigoBarras);
+                filas.appendChild(eanColumna);
 
-                const tdPrice = document.createElement('td');
-                const priceLink = document.createElement('a');
-                priceLink.href = `https://www.carrefour.es/?q=${reference.trim()}`;
-                priceLink.target = '_blank';
-                priceLink.textContent = price.trim();
-                tdPrice.appendChild(priceLink);
-                tr.appendChild(tdPrice);
+                const stockAproxColumna = document.createElement('td');
+                stockAproxColumna.textContent = stockAprox.trim();
+                filas.appendChild(stockAproxColumna);
 
-                const tdPriceInEffect = document.createElement('td');
-                tdPriceInEffect.textContent = priceInEffect.trim();
-                tr.appendChild(tdPriceInEffect);
-
-                const tdStock = document.createElement('td');
-                tdStock.textContent = stockineffect.trim();
-                tr.appendChild(tdStock);
-
-                tableBody.appendChild(tr);
+                CuerpoTabla.appendChild(filas);
             });
         }
 
-        function convertToUpper() {
-            const input = document.getElementById('search');
-            input.value = input.value.toUpperCase();
+        function ponerMayusculas() {
+            const textoEscrito = document.getElementById('search');
+            textoEscrito.value = textoEscrito.value.toUpperCase();
         }
 
-        function filterTable() {
-            const input = document.getElementById('search').value.toLowerCase();
-            const tableBody = document.getElementById('productTable').querySelector('tbody');
-            tableBody.innerHTML = '';
+        function filtrarTabla() {
+            const entrada = document.getElementById('search').value.toLowerCase();
+            const cuerpoTabla = document.getElementById('productTable').querySelector('tbody');
+            cuerpoTabla.innerHTML = '';
 
-            const rows = data.trim().split('\n');
-            const searchTerms = input.split(',').map(term => term.trim()).filter(term => term);
+            const filas = data.trim().split('\n');
+            const terminosBuscados = entrada.split(',').map(term => term.trim()).filter(term => term);
 
-            filteredResults = [];
+            resultadosFiltrados = [];
 
-            rows.forEach(row => {
-                const cols = row.split(';');
-                const productName = cols[5].toLowerCase();
+            filas.forEach(row => {
+                const columnas = row.split(';');
+                const nombreProducto = columnas[5].toLowerCase();
 
-                const allTermsPresent = searchTerms.every(term => productName.includes(term));
+                const contieneTodosTerminos = terminosBuscados.every(term => nombreProducto.includes(term));
 
-                if (allTermsPresent) {
-                    filteredResults.push({
-                        name: cols[5].trim(),
-                        code: cols[6].trim(),
-                        reference: cols[7].trim(),
-                        price: cols[10].trim(),
-                        priceInEffect: cols[11].trim(),
-                        stockineffect: cols[12].trim(),
-                        priceValue: parseFloat(cols[10].replace('€', '').replace(',', '.')) || null
+                if (contieneTodosTerminos) {
+                    resultadosFiltrados.push({
+                        nombreProducto: columnas[5].trim(),
+                        sms: columnas[6].trim(),
+                        ean: columnas[7].trim(),
+                        sup: columnas[10].trim(),
+                        precioAprox: columnas[11].trim(),
+                        stockAprox: columnas[12].trim(),
+                        valorPrecio: parseFloat(columnas[10].replace('€', '').replace(',', '.')) || null
                     });
                 }
             });
 
             // Ordenar los resultados
-            sortResults();
-            renderFilteredResults();
+            ordenarResultados();
+            renderizarResultados();
+
+            // Cambiar visibilidad de botones
+            document.getElementById('searchButton').style.display = 'none';
+            document.getElementById('deleteStockZeroButton').style.display = 'inline-block';
         }
 
-        function sortResults() {
-            filteredResults.sort((a, b) => {
-                const percentageA = a.price.endsWith('%') ? parseInt(a.price) : 0;
-                const percentageB = b.price.endsWith('%') ? parseInt(b.price) : 0;
+        function ordenarResultados() {
+            resultadosFiltrados.sort((a, b) => {
+                const porcentajeA = a.sup.endsWith('%') ? parseInt(a.sup) : 0;
+                const porcentageB = b.sup.endsWith('%') ? parseInt(b.sup) : 0;
 
                 // Primero, ordenar por porcentaje (descendente)
-                if (percentageA !== percentageB) {
-                    return percentageB - percentageA;
+                if (porcentajeA !== porcentageB) {
+                    return porcentageB - porcentajeA;
                 } else {
                     // Luego, ordenar por precio (descendente)
-                    return (b.priceValue || 0) - (a.priceValue || 0);
+                    return (b.valorPrecio || 0) - (a.valorPrecio || 0);
                 }
             });
         }
 
-        function renderFilteredResults() {
-            const tableBody = document.getElementById('productTable').querySelector('tbody');
-            tableBody.innerHTML = '';
+        function renderizarResultados() {
+            const cuerpoTabla = document.getElementById('productTable').querySelector('tbody');
+            cuerpoTabla.innerHTML = '';
 
-            filteredResults.forEach(result => {
-                const tr = document.createElement('tr');
+            resultadosFiltrados.forEach(result => {
+                const fila = document.createElement('tr');
 
-                const tdName = document.createElement('td');
-                tdName.textContent = result.name;
-                tr.appendChild(tdName);
+                const celdaSup = document.createElement('td');
+                const linkProducto = document.createElement('a');
+                linkProducto.href = `https://www.carrefour.es/?q=${result.ean}`;
+                linkProducto.target = '_blank';
+                linkProducto.textContent = result.sup;
+                celdaSup.appendChild(linkProducto);
+                fila.appendChild(celdaSup);
 
-                const tdCode = document.createElement('td');
-                tdCode.textContent = result.code;
-                tr.appendChild(tdCode);
+                const celdaNombreArticulo = document.createElement('td');
+                celdaNombreArticulo.textContent = result.nombreProducto;
+                fila.appendChild(celdaNombreArticulo);
 
-                const tdReference = document.createElement('td');
-                const barcodeImg = document.createElement('img');
-                barcodeImg.className = 'barcode';
-                JsBarcode(barcodeImg, result.reference, {
+                const celdaPrecioAprox = document.createElement('td');
+                celdaPrecioAprox.textContent = result.precioAprox;
+                fila.appendChild(celdaPrecioAprox);
+
+                const celdaSms = document.createElement('td');
+                celdaSms.textContent = result.sms;
+                fila.appendChild(celdaSms);
+
+                const celdaEan = document.createElement('td');
+                const imagenCodigoBarras = document.createElement('img');
+                imagenCodigoBarras.className = 'barcode';
+                JsBarcode(imagenCodigoBarras, result.ean, {
                     width: 4,
                     height: 80
                 });
 
-                barcodeImg.onclick = () => showBarcodeModal(result.reference);
-                tdReference.appendChild(barcodeImg);
-                tr.appendChild(tdReference);
+                imagenCodigoBarras.onclick = () => mostrarCodigoBarras(result.ean);
+                celdaEan.appendChild(imagenCodigoBarras);
+                fila.appendChild(celdaEan);
 
-                const tdPrice = document.createElement('td');
-                const priceLink = document.createElement('a');
-                priceLink.href = `https://www.carrefour.es/?q=${result.reference}`;
-                priceLink.target = '_blank';
-                priceLink.textContent = result.price;
-                tdPrice.appendChild(priceLink);
-                tr.appendChild(tdPrice);
+                const celdaStockAprox = document.createElement('td');
+                celdaStockAprox.textContent = result.stockAprox;
+                fila.appendChild(celdaStockAprox);
 
-                const tdPriceInEffect = document.createElement('td');
-                tdPriceInEffect.textContent = result.priceInEffect;
-                tr.appendChild(tdPriceInEffect);
-
-                const tdStock = document.createElement('td');
-                tdStock.textContent = result.stockineffect;
-                tr.appendChild(tdStock);
-
-                tableBody.appendChild(tr);
+                cuerpoTabla.appendChild(fila);
             });
         }
 
-        function filterStockZero() {
-            filteredResults = filteredResults.filter(result => result.stockineffect !== '0');
-            renderFilteredResults();
+        function eliminarStock0() {
+            resultadosFiltrados = resultadosFiltrados.filter(result => result.stockAprox !== '0');
+            renderizarResultados();
+            // Cambiar visibilidad de botones
+            document.getElementById('deleteStockZeroButton').style.display = 'none';
+            document.getElementById('searchAgainButton').style.display = 'inline-block';
         }
 
-        function showBarcodeModal(reference) {
+        function buscarDeNuevo() {
+            location.reload(); // Actualiza la página
+        }
+
+        function mostrarCodigoBarras(reference) {
             const modal = document.getElementById('barcodeModal');
             const modalBarcodeImage = document.getElementById('modalBarcodeImage');
             JsBarcode(modalBarcodeImage, reference, {
@@ -286,7 +314,7 @@
             modal.style.display = 'flex';
         }
 
-        function closeModal() {
+        function cerrarModal() {
             const modal = document.getElementById('barcodeModal');
             modal.style.display = 'none';
         }
@@ -295,4 +323,5 @@
 
     </script>
 </body>
+
 </html>
