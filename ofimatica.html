@@ -10,6 +10,35 @@
             margin: 20px;
         }
 
+        #searchContainer {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        #search {
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 32px; /* Tamaño de fuente aumentado */
+        }
+
+        #searchButton,
+        #deleteStockZeroButton,
+        #searchAgainButton {
+            padding: 10px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -31,42 +60,12 @@
             background-color: #f5f5f5;
         }
 
-        #search,
-        #deleteStockZeroButton,
-        #searchAgainButton {
-            margin-bottom: 10px;
-            padding: 10px;
-            width: 80%;
-            border: 1px solid #ddd;
-        }
-
-        #searchButton,
-        #deleteStockZeroButton,
-        #searchAgainButton {
-            padding: 10px 15px;
-            cursor: pointer;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            margin-left: 5px;
-        }
-
         .barcode {
             height: 80px;
             cursor: pointer;
         }
 
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        a:hover {
-            color: #4CAF50;
-        }
-
-        /* Estilos para el modal */
+        /* Modal styles */
         .modal {
             display: none;
             position: fixed;
@@ -84,15 +83,11 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            text-align: center;
         }
 
         .modal img {
             height: 200px;
-        }
-
-        /* Centrado del contenido del modal */
-        .modal-content {
-            text-align: center;
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
@@ -101,10 +96,12 @@
 
 <body>
 
-    <input type="text" id="search" placeholder="Palabras separadas por ,(comas)" oninput="ponerMayusculas()">
-    <button id="searchButton" onclick="filtrarTabla()">Buscar</button>
-    <button id="deleteStockZeroButton" onclick="eliminarStock0()" style="display: none;">Eliminar Stock 0</button>
-    <button id="searchAgainButton" onclick="buscarDeNuevo()" style="display: none;">Buscar de nuevo</button>
+    <div id="searchContainer">
+        <input type="text" id="search" placeholder="Palabras separadas por ,(comas)" oninput="ponerMayusculas()">
+        <button id="searchButton" onclick="filtrarTabla()">Buscar</button>
+        <button id="deleteStockZeroButton" onclick="eliminarStock0()" style="display: none;">Eliminar Stock 0</button>
+        <button id="searchAgainButton" onclick="buscarDeNuevo()" style="display: none;">Volver al principio</button>
+    </div>
 
     <table id="productTable">
         <thead>
