@@ -10,6 +10,12 @@
             margin: 20px;
         }
 
+        a {
+            color: inherit;
+            /* O color: black; */
+            text-decoration: none;
+        }
+
         #searchContainer {
             display: flex;
             flex-direction: column;
@@ -22,7 +28,8 @@
             margin-bottom: 10px;
             width: 100%;
             box-sizing: border-box;
-            font-size: 32px; /* Tamaño de fuente aumentado */
+            font-size: 32px;
+            /* Tamaño de fuente aumentado */
         }
 
         #searchButton,
@@ -97,8 +104,8 @@
 <body>
 
     <div id="searchContainer">
-        <input type="text" id="search" placeholder="Palabras separadas por ,(comas)" oninput="ponerMayusculas()">
-        <button id="searchButton" onclick="filtrarTabla()">Buscar</button>
+        <input type="text" id="search"  oninput="ponerMayusculas()">
+        <button id="searchButton" onclick="filtrarTabla()">Buscar(separa por comas)</button>
         <button id="deleteStockZeroButton" onclick="eliminarStock0()" style="display: none;">Eliminar Stock 0</button>
         <button id="searchAgainButton" onclick="buscarDeNuevo()" style="display: none;">Volver al principio</button>
     </div>
